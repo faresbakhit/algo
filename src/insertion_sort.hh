@@ -1,12 +1,14 @@
 #pragma once
 #include <functional>
+#include <iterator>
 
 namespace algo::sorting {
 template <typename RandomAccessIterator, typename Compare>
 void insertion_sort(RandomAccessIterator first, RandomAccessIterator last,
                     Compare cmp) {
-  for (auto it = first + 1; it < last; it++) {
-    auto key = *it;
+  using value_type = std::iterator_traits<RandomAccessIterator>::value_type;
+  for (RandomAccessIterator it = first + 1; it < last; it++) {
+    value_type key = *it;
     RandomAccessIterator jt = it - 1;
     while (cmp(key, *jt)) {
       *(jt + 1) = *jt;
