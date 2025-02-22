@@ -8,8 +8,10 @@ void insertion_sort(RandomAccessIterator first, RandomAccessIterator last,
   for (auto it = first + 1; it < last; it++) {
     auto key = *it;
     RandomAccessIterator jt = it - 1;
-    while (jt != first - 1 && !cmp(*jt, key)) {
+    while (cmp(key, *jt)) {
       *(jt + 1) = *jt;
+      if (jt == first)
+        break;
       jt = jt - 1;
     }
     *(jt + 1) = key;
