@@ -1,0 +1,11 @@
+-std=c++20
+-g
+-O1
+-Wall
+-Wextra
+-Wpedantic
+-Ifmt/include
+-D_GLIBCXX_DEBUG
+-fno-omit-frame-pointer
+-fsanitize=address,undefined
+-mno-omit-leaf-frame-pointer
