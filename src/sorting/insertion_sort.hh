@@ -1,27 +1,27 @@
 #pragma once
+#include <fmt/ranges.h>
 #include <functional>
-#include <iterator>
 
 namespace algo::sorting {
 template <typename RandomAccessIterator, typename Compare>
-void insertion_sort(RandomAccessIterator first, RandomAccessIterator last,
-                    Compare cmp) {
-  using value_type = std::iterator_traits<RandomAccessIterator>::value_type;
-  for (RandomAccessIterator it = first + 1; it < last; it++) {
-    value_type key = *it;
-    RandomAccessIterator jt = it - 1;
-    while (cmp(key, *jt)) {
-      *(jt + 1) = *jt;
-      if (jt == first)
-        break;
-      jt = jt - 1;
+void insertion_sort(const RandomAccessIterator &first, const RandomAccessIterator &last, Compare cmp) {
+    if (first == last)
+        return;
+
+    RandomAccessIterator j;
+
+    for (RandomAccessIterator p = first + 1; p != last; ++p) {
+        fmt::println("[{}]", fmt::join(first, last, " "));
+        auto tmp = std::move(*p);
+        for (j = p; j != first && cmp(tmp, *(j - 1)); --j) {
+            *j = std::move(*(j - 1));
+        }
+        *j = std::move(tmp);
     }
-    *(jt + 1) = key;
-  }
 }
 
 template <typename RandomAccessIterator>
-void insertion_sort(RandomAccessIterator first, RandomAccessIterator last) {
-  insertion_sort<RandomAccessIterator>(first, last, std::less());
+void insertion_sort(const RandomAccessIterator &first, const RandomAccessIterator &last) {
+    insertion_sort<RandomAccessIterator>(first, last, std::less<decltype(*first)>());
 }
 } // namespace algo::sorting

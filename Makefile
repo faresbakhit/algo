@@ -1,8 +1,8 @@
 COMPILE.cc = $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 LINK.cc = $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
-CXXFLAGS = @compile_flags.txt
-LDFLAGS = @link_flags.txt
+CXXFLAGS = $(shell cat compile_flags.txt)
+LDFLAGS = $(shell cat link_flags.txt)
 
 objects = fmt/src/format.o $(patsubst src/%.cc,src/%.o,$(shell find src -name "*.cc" ! -path "src/bin/*"))
 binaries = $(basename $(wildcard src/bin/*.cc))
@@ -21,8 +21,13 @@ fmt/src/%.o: fmt/src/%.cc
 
 .PHONY: clean
 clean:
-	@find src/bin src fmt/src -type f  \( -name "*.o" -o -name "*.d" -o ! -name "*.*" \) -exec echo rm -f {} +
+	@find src fmt/src -type f  \( -name "*.o" -o -name "*.d" -o ! -name "*.*" \) -exec echo rm -f {} +
 	@find src/bin -type f ! -name "*.*" -delete
 	@find src fmt/src \( -name "*.o" -o -name "*.d" \) -delete
 
-include $(shell find src -name '*.d')
+.PHONY: format
+format:
+	@find src \( -name "*.cc" -o -name "*.hh" \) -exec echo clang-format -i {} +
+	@find src \( -name "*.cc" -o -name "*.hh" \) -exec clang-format -i {} +
+
+include $(shell find src -name "*.d")
