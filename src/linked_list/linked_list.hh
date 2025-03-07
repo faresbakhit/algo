@@ -310,15 +310,43 @@ public:
     }
 
     virtual void erase(const LinkedListIterator<T, Node> &pos) override {
-        if (pos.node->prev != nullptr)
-            pos.node->prev->next = pos.node->next;
-        if (pos.node->next != nullptr)
-            pos.node->next->prev = pos.node->prev;
-        if (pos.node == this->first)
-            this->first = pos.node->next;
-        if (pos.node == this->last)
-            this->last = pos.node->prev;
-        delete pos.node;
+        Node *node = pos.node;
+        if (node->prev != nullptr)
+            node->prev->next = node->next;
+        if (node->next != nullptr)
+            node->next->prev = node->prev;
+        if (node == this->first)
+            this->first = node->next;
+        if (node == this->last)
+            this->last = node->prev;
+        delete node;
+    }
+
+    virtual void splice(const LinkedListIterator<T, Node> &pos, DoublyLinkedList<T> &other) {
+        Node *node = pos.node;
+
+        if (this->first == nullptr) {
+            this->first = other.first;
+            this->last = other.last;
+        } else if (node == nullptr) {
+            this->last->next = other.first;
+            other.first->prev = this->last;
+            this->last = other.last;
+        } else if (node == this->first) {
+            this->first->prev = other.last;
+            other.last->next = this->first;
+            this->first = other.first;
+        } else {
+            node->prev->next = other.first;
+            other.first->prev = node->prev;
+            node->prev = other.last;
+            other.last->next = node;
+        }
+
+        this->count += other.count;
+        other.first = nullptr;
+        other.last = nullptr;
+        other.count = 0;
     }
 };
 } // namespace algo

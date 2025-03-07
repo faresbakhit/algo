@@ -28,14 +28,24 @@ int main() {
     y.insert(11);
     fmt::println("[{}] (front={}, back={})", fmt::join(y.begin(), y.end(), ", "), y.front(), y.back());
 
-    DoublyLinkedList<int> z;
-    z.pushBack(3);
-    z.pushFront(1);
-    z.pushBack(2);
-    z.erase(std::next(z.begin(), 2));
-    z.erase(z.begin());
-    z.pushBack(1);
-    fmt::println("[{}] (front={}, back={})", fmt::join(z.begin(), z.end(), ", "), z.front(), z.back());
+    DoublyLinkedList<int> z1;
+    z1.pushBack(3);
+    z1.pushFront(1);
+    z1.pushBack(2);
+    z1.erase(std::next(z1.begin(), 2));
+    z1.erase(z1.begin());
+    z1.pushBack(1);
+    z1.pushBack(0);
+    fmt::println("[{}] (front={}, back={})", fmt::join(z1.begin(), z1.end(), ", "), z1.front(), z1.back());
+
+    DoublyLinkedList<int> z2;
+    z2.pushBack(10);
+    z2.pushBack(20);
+    z2.pushBack(30);
+    fmt::println("[{}] (front={}, back={})", fmt::join(z2.begin(), z2.end(), ", "), z2.front(), z2.back());
+    z1.splice(std::next(z1.begin(), 2), z2);
+    fmt::println("[{}] (front={}, back={})", fmt::join(z1.begin(), z1.end(), ", "), z1.front(), z1.back());
+    fmt::println("[{}]", fmt::join(z2.begin(), z2.end(), ", "));
 
     UnorderedLinkedList<int> w;
     w.pushBack(3);
