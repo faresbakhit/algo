@@ -1,9 +1,12 @@
 #include "../linked_list/linked_list.hh"
 #include <cassert>
+#include <fmt/ostream.h>
 #include <fmt/ranges.h>
-#include <iostream>
 
 using namespace algo;
+
+template <class T, class Node>
+struct fmt::formatter<LinkedListTrace<T, Node>> : fmt::ostream_formatter {};
 
 int main() {
     UnorderedLinkedList<int> x;
@@ -34,5 +37,10 @@ int main() {
     z.pushBack(1);
     fmt::println("[{}] (front={}, back={})", fmt::join(z.begin(), z.end(), ", "), z.front(), z.back());
 
-    std::cout << x.begin().curr << std::endl;
+    UnorderedLinkedList<int> w;
+    w.pushBack(3);
+    w.pushBack(6);
+    w.pushBack(9);
+    std::next(w.begin(), 2).node->next = w.begin().node;
+    fmt::println("{}", w.trace());
 }

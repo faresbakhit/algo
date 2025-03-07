@@ -11,9 +11,51 @@ concept Streamable = requires(std::ostream &os, T value) {
     { os << value } -> std::convertible_to<std::ostream &>;
 };
 
-template <typename Node>
-requires Streamable<Node>
-std::ostream &traceNode(std::ostream &os, const Node *node) {
+template <class T>
+struct LinkedListNode {
+    T data;
+    LinkedListNode<T> *next;
+
+    LinkedListNode() : data(), next(nullptr) {}
+    LinkedListNode(const T &value) : data(value), next(nullptr) {}
+    LinkedListNode(const T &value, LinkedListNode<T> *link) : data(value), next(link) {}
+};
+
+template <class T>
+struct DoublyLinkedListNode {
+    T data;
+    DoublyLinkedListNode<T> *next;
+    DoublyLinkedListNode<T> *prev;
+
+    DoublyLinkedListNode() : data(), next(nullptr), prev(nullptr) {}
+    DoublyLinkedListNode(const T &value) : data(value), next(nullptr), prev(nullptr) {}
+    DoublyLinkedListNode(const T &value, DoublyLinkedListNode<T> *nextLink)
+        : data(value), next(nextLink), prev(nullptr) {}
+    DoublyLinkedListNode(const T &value, DoublyLinkedListNode<T> *nextLink, DoublyLinkedListNode<T> *prevLink)
+        : data(value), next(nextLink), prev(prevLink) {}
+};
+} // namespace detail
+
+template <class T, class Node>
+class LinkedListTrace {
+public:
+    LinkedListTrace(const Node *linkedListNode) : node(linkedListNode) {}
+
+    template <class Tp, class NodeP>
+    requires detail::Streamable<Tp>
+    friend std::ostream &operator<<(std::ostream &os, const LinkedListTrace<Tp, NodeP> &linkedListTrace);
+
+    template <class Tp, class NodeP>
+    friend std::ostream &operator<<(std::ostream &os, const LinkedListTrace<Tp, NodeP> &linkedListTrace);
+
+private:
+    const Node *node;
+};
+
+template <class T, class Node>
+requires detail::Streamable<T>
+std::ostream &operator<<(std::ostream &os, const LinkedListTrace<T, Node> &linkedListTrace) {
+    const Node *node = linkedListTrace.node;
     const Node *next = node->next, *nextFast = next == nullptr ? nullptr : next->next;
     if (next != nullptr)
         os << "  ";
@@ -38,8 +80,9 @@ std::ostream &traceNode(std::ostream &os, const Node *node) {
     return os;
 }
 
-template <typename Node>
-std::ostream &traceNode(std::ostream &os, const Node *node) {
+template <class T, class Node>
+std::ostream &operator<<(std::ostream &os, const LinkedListTrace<T, Node> &linkedListTrace) {
+    const Node *node = linkedListTrace.node;
     const Node *next = node->next, *nextFast = next == nullptr ? nullptr : next->next;
     if (next != nullptr)
         os << "  ";
@@ -64,88 +107,42 @@ std::ostream &traceNode(std::ostream &os, const Node *node) {
     return os;
 }
 
-template <class T>
-struct LinkedListNode {
-    T data;
-    LinkedListNode<T> *next;
-
-    LinkedListNode() : data(), next(nullptr) {}
-    LinkedListNode(const T &value) : data(value), next(nullptr) {}
-    LinkedListNode(const T &value, LinkedListNode<T> *link) : data(value), next(link) {}
-};
-
-template <class T>
-requires Streamable<T>
-std::ostream &operator<<(std::ostream &os, LinkedListNode<T> *node) {
-    return traceNode(os, node);
-}
-
-template <class T>
-std::ostream &operator<<(std::ostream &os, LinkedListNode<T> *node) {
-    return traceNode(os, node);
-}
-
-template <class T>
-struct DoublyLinkedListNode {
-    T data;
-    DoublyLinkedListNode<T> *next;
-    DoublyLinkedListNode<T> *prev;
-
-    DoublyLinkedListNode() : data(), next(nullptr), prev(nullptr) {}
-    DoublyLinkedListNode(const T &value) : data(value), next(nullptr), prev(nullptr) {}
-    DoublyLinkedListNode(const T &value, DoublyLinkedListNode<T> *nextLink)
-        : data(value), next(nextLink), prev(nullptr) {}
-    DoublyLinkedListNode(const T &value, DoublyLinkedListNode<T> *nextLink, DoublyLinkedListNode<T> *prevLink)
-        : data(value), next(nextLink), prev(prevLink) {}
-};
-
-template <class T>
-requires Streamable<T>
-std::ostream &operator<<(std::ostream &os, DoublyLinkedListNode<T> *node) {
-    return traceNode(os, node);
-}
-
-template <class T>
-std::ostream &operator<<(std::ostream &os, DoublyLinkedListNode<T> *node) {
-    return traceNode(os, node);
-}
-} // namespace detail
-
 template <class T, class Node>
 class LinkedListIterator {
 public:
     using value_type = T;
     using difference_type = std::ptrdiff_t;
 
-    LinkedListIterator() : curr(nullptr) {}
-    LinkedListIterator(Node *node) : curr(node) {}
+    LinkedListIterator() : node(nullptr) {}
+    LinkedListIterator(Node *node) : node(node) {}
 
     T &operator*() const {
-        return curr->data;
+        return node->data;
     }
 
     LinkedListIterator<T, Node> &operator++() {
-        curr = curr->next;
+        node = node->next;
         return *this;
     }
 
     LinkedListIterator<T, Node> operator++(int) {
         LinkedListIterator<T, Node> x = *this;
-        curr = curr->next;
+        node = node->next;
         return x;
     }
 
     bool operator==(const LinkedListIterator<T, Node> &other) const {
-        return curr == other.curr;
+        return node == other.node;
     }
 
-    Node *curr;
+    Node *node;
 };
 
 template <class T, class Node>
 class LinkedList {
 public:
     LinkedList() : count(0), first(nullptr), last(nullptr) {}
+
     ~LinkedList() {
         clear();
     }
@@ -186,7 +183,7 @@ public:
         Node *prev = nullptr;
         Node *curr = first;
         while (curr != nullptr) {
-            if (curr == pos.curr) {
+            if (curr == pos.node) {
                 if (prev == nullptr) {
                     first = curr->next;
                 } else {
@@ -205,11 +202,12 @@ public:
 
     void clear() {
         Node *temp;
-        while (first != nullptr) {
+        while (first != nullptr && first != last /* circular lists */) {
             temp = first->next;
             delete first;
             first = temp;
         }
+        delete last;
         last = nullptr;
         count = 0;
     }
@@ -225,8 +223,13 @@ public:
     LinkedListIterator<T, Node> begin() {
         return LinkedListIterator<T, Node>(first);
     }
+
     LinkedListIterator<T, Node> end() {
         return LinkedListIterator<T, Node>(nullptr);
+    }
+
+    LinkedListTrace<T, Node> trace() {
+        return LinkedListTrace<T, Node>(first);
     }
 
 protected:
@@ -307,15 +310,15 @@ public:
     }
 
     virtual void erase(const LinkedListIterator<T, Node> &pos) override {
-        if (pos.curr->prev != nullptr)
-            pos.curr->prev->next = pos.curr->next;
-        if (pos.curr->next != nullptr)
-            pos.curr->next->prev = pos.curr->prev;
-        if (pos.curr == this->first)
-            this->first = pos.curr->next;
-        if (pos.curr == this->last)
-            this->last = pos.curr->prev;
-        delete pos.curr;
+        if (pos.node->prev != nullptr)
+            pos.node->prev->next = pos.node->next;
+        if (pos.node->next != nullptr)
+            pos.node->next->prev = pos.node->prev;
+        if (pos.node == this->first)
+            this->first = pos.node->next;
+        if (pos.node == this->last)
+            this->last = pos.node->prev;
+        delete pos.node;
     }
 };
 } // namespace algo
