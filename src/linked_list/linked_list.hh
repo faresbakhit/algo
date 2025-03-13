@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstddef>
-#include <functional>
-#include <ostream>
+#include <cstddef>    // std::size_t
+#include <functional> // std::less
+#include <ostream>    // std::ostream
 
 namespace algo {
 namespace detail {
@@ -322,7 +322,7 @@ public:
         delete node;
     }
 
-    virtual void splice(const LinkedListIterator<T, Node> &pos, DoublyLinkedList<T> &other) {
+    void merge(const LinkedListIterator<T, Node> &pos, DoublyLinkedList<T> &other) {
         Node *node = pos.node;
 
         if (this->first == nullptr) {

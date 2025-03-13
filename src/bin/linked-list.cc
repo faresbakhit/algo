@@ -43,7 +43,7 @@ int main() {
     z2.pushBack(20);
     z2.pushBack(30);
     fmt::println("[{}] (front={}, back={})", fmt::join(z2.begin(), z2.end(), ", "), z2.front(), z2.back());
-    z1.splice(std::next(z1.begin(), 2), z2);
+    z1.merge(std::next(z1.begin(), 2), z2);
     fmt::println("[{}] (front={}, back={})", fmt::join(z1.begin(), z1.end(), ", "), z1.front(), z1.back());
     fmt::println("[{}]", fmt::join(z2.begin(), z2.end(), ", "));
 
