@@ -1,16 +1,12 @@
 #pragma once
 
-#include <cstddef>    // std::size_t
-#include <functional> // std::less
-#include <ostream>    // std::ostream
+#include "circular_singly_linked_list.hh" // algo::detail::Streamable
+#include <cstddef>                        // std::size_t
+#include <functional>                     // std::less
+#include <ostream>                        // std::ostream
 
 namespace algo {
 namespace detail {
-template <typename T>
-concept Streamable = requires(std::ostream &os, T value) {
-    { os << value } -> std::convertible_to<std::ostream &>;
-};
-
 template <class T>
 struct LinkedListNode {
     T data;
