@@ -3,9 +3,12 @@ BasedOnStyle: LLVM
 TabWidth: 4
 IndentWidth: 4
 LineEnding: LF
-ColumnLimit: 120
+ColumnLimit: 90
 IndentAccessModifiers: false
 AccessModifierOffset: -4
-AllowShortFunctionsOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: None
 AlwaysBreakTemplateDeclarations: Yes
 IndentRequiresClause: false
+BreakBeforeBraces: Allman
+DerivePointerAlignment: false
+PointerAlignment: Left

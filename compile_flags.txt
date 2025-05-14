@@ -5,6 +5,7 @@
 -Wextra
 -Wpedantic
 -Ifmt/include
+-Iboost/include
 -D_GLIBCXX_DEBUG
 -fno-omit-frame-pointer
 -fsanitize=address,undefined
