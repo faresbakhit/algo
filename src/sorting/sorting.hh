@@ -1,6 +1,7 @@
 #pragma once
 #include "heapsort.hh"
 #include "insertion_sort.hh"
+#include "quicksort.hh"
 #include "selection_sort.hh"
 #include <algorithm>
 #include <optional>
@@ -12,6 +13,7 @@ enum class Strategy
 {
     Heapsort,
     InsertionSort,
+    Quicksort,
     SelectionSort,
     Std,
 };
@@ -29,6 +31,9 @@ void sort(RandomAccessIterator first, RandomAccessIterator last, Compare cmp,
         break;
     case Strategy::InsertionSort:
         insertion_sort(first, last, cmp);
+        break;
+    case Strategy::Quicksort:
+        quicksort(first, last, cmp);
         break;
     case Strategy::SelectionSort:
         selection_sort(first, last, cmp);
