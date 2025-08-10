@@ -77,7 +77,7 @@ private:
 
 int main()
 {
-    PriorityQueue<int> pq;
+    PriorityQueue<int, std::vector<int>, std::greater<int>> pq;
     pq.push(50);
     pq.push(3);
     pq.push(1);

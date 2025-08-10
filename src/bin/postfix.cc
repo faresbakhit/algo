@@ -37,26 +37,26 @@ cpp_int eval(char op, cpp_int a, cpp_int b) {
     return -1;
 }
 
-string infixToPostfix(const string &infixExpr) {
-    ostringstream oss;
+void infixToPostfix(const string &infixExpr, string& postfixExpr) {
     stack<char> s;
     for (char c : infixExpr) {
-        if (precedence(c) != -1) {
-            oss << ' ';
-            while (!s.empty() && precedence(s.top()) > precedence(c)) {
-                oss << s.top();
+        int prec = precedence(c);
+        if (prec != -1) {
+            postfixExpr.push_back(' ');
+            while (!s.empty() && precedence(s.top()) > prec) {
+                postfixExpr.push_back(s.top());
+                postfixExpr.push_back(' ');
                 s.pop();
             }
             s.push(c);
         } else {
-            oss << c;
+            postfixExpr.push_back(c);
         }
     }
     while (!s.empty()) {
-        oss << s.top();
+        postfixExpr.push_back(s.top());
         s.pop();
     }
-    return oss.str();
 }
 
 cpp_int postfixToAnswer(const string &postfixExpr) {
@@ -88,7 +88,7 @@ cpp_int postfixToAnswer(const string &postfixExpr) {
 int main() {
     std::string infixExpr, postfixExpr;
     getline(cin, infixExpr);
-    postfixExpr = infixToPostfix(infixExpr);
+    infixToPostfix(infixExpr, postfixExpr);
     fmt::println("{}", postfixExpr);
     fmt::println("{}", postfixToAnswer(postfixExpr));
 }

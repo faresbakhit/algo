@@ -4,7 +4,7 @@ LINK.cc = $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 CXXFLAGS = $(shell cat compile_flags.txt)
 LDFLAGS = $(shell cat link_flags.txt)
 
-objects = fmt/src/format.o $(patsubst src/%.cc,src/%.o,$(shell find src -name "*.cc" ! -path "src/bin/*"))
+objects = fmt/src/format.o scn/src/impl.o $(patsubst src/%.cc,src/%.o,$(shell find src -name "*.cc" ! -path "src/bin/*"))
 binaries = $(basename $(wildcard src/bin/*.cc))
 
 .PHONY: all
@@ -19,11 +19,14 @@ src/%.o: src/%.cc
 fmt/src/%.o: fmt/src/%.cc
 	$(COMPILE.cc) -o $@ $<
 
+scn/src/%.o: scn/src/%.cc
+	$(COMPILE.cc) -U_GLIBCXX_DEBUG -w -o $@ $<
+
 .PHONY: clean
 clean:
-	@find src fmt/src -type f  \( -name "*.o" -o -name "*.d" -o ! -name "*.*" \) -exec echo rm -f {} +
+	@find src fmt/src scn/src -type f  \( -name "*.o" -o -name "*.d" -o ! -name "*.*" \) -exec echo rm -f {} +
 	@find src/bin -type f ! -name "*.*" -delete
-	@find src fmt/src \( -name "*.o" -o -name "*.d" \) -delete
+	@find src fmt/src scn/src \( -name "*.o" -o -name "*.d" \) -delete
 
 .PHONY: format
 format:

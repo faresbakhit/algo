@@ -5,6 +5,10 @@
 -Wextra
 -Wpedantic
 -Ifmt/include
+-Iscn/include
+-DSCN_DISABLE_FAST_FLOAT
+-DSCN_STDLIB_GLIBCXX
+--system-header-prefix=scn/
 -Iboost/include
 -D_GLIBCXX_DEBUG
 -fno-omit-frame-pointer
